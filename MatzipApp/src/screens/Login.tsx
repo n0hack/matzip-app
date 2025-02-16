@@ -1,4 +1,4 @@
-import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 
 type LoginScreenProps = {};
 
