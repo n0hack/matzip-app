@@ -1,28 +1,19 @@
-import {SafeAreaView, StyleSheet, View} from 'react-native';
-import {InputField} from '../../components/input-field';
-import {useState} from 'react';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { InputField } from '../../components/input-field';
+import { CustomButton } from '../../components/custom-button';
+import { useForm } from '../../hooks/useForm';
+import { validateLogin } from '../../utils';
 
 type LoginScreenProps = {};
 
 export default function LoginScreen({}: LoginScreenProps) {
-  const [values, setValues] = useState({
-    email: '',
-    password: '',
-  });
-  const [touched, setTouched] = useState({
-    email: false,
-    password: false,
+  const login = useForm({
+    initialValues: { email: '', password: '' },
+    validate: validateLogin,
   });
 
-  const handleChangeValues = (key: keyof typeof values) => (text: string) => {
-    setValues({...values, [key]: text});
-  };
-
-  const handleBlur = (key: keyof typeof values) => () => {
-    setTouched({
-      ...touched,
-      [key]: true,
-    });
+  const handleSubmit = () => {
+    console.log(login.values);
   };
 
   return (
@@ -30,23 +21,25 @@ export default function LoginScreen({}: LoginScreenProps) {
       <View style={styles.inputContainer}>
         <InputField
           placeholder="이메일"
-          error="이메일을 입력하세요"
+          error={login.errors.email}
           inputMode="email"
-          value={values.email}
-          onChangeText={handleChangeValues('email')}
-          onBlur={handleBlur('email')}
-          touched={touched.email}
+          touched={login.touched.email}
+          {...login.getTextInputProps('email')}
         />
         <InputField
           placeholder="비밀번호"
-          error="비밀번호를 입력하세요"
+          error={login.errors.password}
           secureTextEntry
-          value={values.password}
-          onChangeText={handleChangeValues('password')}
-          onBlur={handleBlur('password')}
-          touched={touched.password}
+          touched={login.touched.password}
+          {...login.getTextInputProps('password')}
         />
       </View>
+      <CustomButton
+        label="로그인"
+        variant="filled"
+        size="large"
+        onPress={handleSubmit}
+      />
     </SafeAreaView>
   );
 }
@@ -58,5 +51,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     gap: 20,
+    marginBottom: 30,
   },
 });
