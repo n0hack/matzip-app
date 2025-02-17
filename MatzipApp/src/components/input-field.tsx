@@ -7,8 +7,9 @@ import {
   TextInputProps,
   View,
 } from 'react-native';
-import {colors} from '../constants';
-import {useRef} from 'react';
+import { colors } from '../constants';
+import { forwardRef, useRef } from 'react';
+import { mergeRefs } from '../utils';
 
 interface InputFieldProps extends TextInputProps {
   disabled?: boolean;
@@ -18,41 +19,40 @@ interface InputFieldProps extends TextInputProps {
 
 const devicedHeight = Dimensions.get('screen').height;
 
-export function InputField({
-  error,
-  disabled = false,
-  touched = false,
-  ...rest
-}: InputFieldProps) {
-  const innerRef = useRef<TextInput>(null);
+export const InputField = forwardRef<TextInput, InputFieldProps>(
+  ({ error, disabled = false, touched = false, ...rest }, ref) => {
+    const innerRef = useRef<TextInput>(null);
 
-  const handlePressInput = () => {
-    innerRef.current?.focus();
-  };
+    const handlePressInput = () => {
+      innerRef.current?.focus();
+    };
 
-  return (
-    <Pressable onPress={handlePressInput}>
-      <View
-        style={[
-          styles.conatiner,
-          disabled && styles.disabled,
-          touched && Boolean(error) && styles.inputError,
-        ]}>
-        <TextInput
-          ref={innerRef}
-          editable={!disabled}
-          placeholderTextColor={colors.GRAY_500}
-          style={[styles.input, disabled && styles.disabled]}
-          autoCapitalize="none"
-          spellCheck={false}
-          autoCorrect={false}
-          {...rest}
-        />
-        {touched && Boolean(error) && <Text style={styles.error}>{error}</Text>}
-      </View>
-    </Pressable>
-  );
-}
+    return (
+      <Pressable onPress={handlePressInput}>
+        <View
+          style={[
+            styles.conatiner,
+            disabled && styles.disabled,
+            touched && Boolean(error) && styles.inputError,
+          ]}>
+          <TextInput
+            ref={ref ? mergeRefs(innerRef, ref) : innerRef}
+            editable={!disabled}
+            placeholderTextColor={colors.GRAY_500}
+            style={[styles.input, disabled && styles.disabled]}
+            autoCapitalize="none"
+            spellCheck={false}
+            autoCorrect={false}
+            {...rest}
+          />
+          {touched && Boolean(error) && (
+            <Text style={styles.error}>{error}</Text>
+          )}
+        </View>
+      </Pressable>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   conatiner: {
