@@ -4,12 +4,14 @@ import { useForm } from '../../hooks/useForm';
 import { CustomButton } from '../../components/custom-button';
 import { validateSignup } from '../../utils';
 import { useRef } from 'react';
+import { useAuth } from '../../hooks/queries/useAuth';
 
 type SignupScreenProps = {};
 
 export default function SignupScreen({}: SignupScreenProps) {
   const passwordRef = useRef<TextInput>(null);
   const passwordConfirmRef = useRef<TextInput>(null);
+  const { signupMutation, loginMutation } = useAuth();
 
   const signup = useForm({
     initialValues: {
@@ -21,7 +23,17 @@ export default function SignupScreen({}: SignupScreenProps) {
   });
 
   const handleSubmit = () => {
-    console.log(signup.values);
+    console.log(signup.values, '머임?');
+    const { email, password } = signup.values;
+    signupMutation.mutate(signup.values, {
+      onSuccess: () => {
+        console.log('signup success');
+        loginMutation.mutate({ email, password });
+      },
+      onError: () => {
+        console.log('ㅇ러');
+      },
+    });
   };
 
   return (

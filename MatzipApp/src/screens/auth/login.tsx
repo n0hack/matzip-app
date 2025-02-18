@@ -4,11 +4,13 @@ import { CustomButton } from '../../components/custom-button';
 import { useForm } from '../../hooks/useForm';
 import { validateLogin } from '../../utils';
 import { useRef } from 'react';
+import { useAuth } from '../../hooks/queries/useAuth';
 
 type LoginScreenProps = {};
 
 export default function LoginScreen({}: LoginScreenProps) {
   const passwordRef = useRef<TextInput>(null);
+  const { loginMutation } = useAuth();
   const login = useForm({
     initialValues: { email: '', password: '' },
     validate: validateLogin,
@@ -16,6 +18,7 @@ export default function LoginScreen({}: LoginScreenProps) {
 
   const handleSubmit = () => {
     console.log(login.values);
+    loginMutation.mutate(login.values);
   };
 
   return (
