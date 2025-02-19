@@ -1,10 +1,10 @@
 import { SafeAreaView, StyleSheet, TextInput, View } from 'react-native';
-import { InputField } from '../../components/input-field';
-import { useForm } from '../../hooks/useForm';
-import { CustomButton } from '../../components/custom-button';
-import { validateSignup } from '../../utils';
+import { InputField } from '@/components/input-field';
+import { useForm } from '@/hooks/useForm';
+import { CustomButton } from '@/components/custom-button';
+import { validateSignup } from '@/utils';
 import { useRef } from 'react';
-import { useAuth } from '../../hooks/queries/useAuth';
+import { useAuth } from '@/hooks/queries/useAuth';
 
 type SignupScreenProps = {};
 
