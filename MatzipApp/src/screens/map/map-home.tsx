@@ -1,19 +1,29 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { useAuth } from '../../hooks/queries/useAuth';
+import MapView from 'react-native-maps';
 
-type MapHomeScreenProps = {};
-
-export default function MapHomeScreen({}: MapHomeScreenProps) {
+export default function MapHomeScreen() {
   const { logoutMutation } = useAuth();
 
+  const handleLogout = () => {
+    logoutMutation.mutate({});
+  };
+
   return (
-    <View style={styles.conatiner}>
-      <Text>MapHomeScreen</Text>
-      <Button title="로그아웃" onPress={() => logoutMutation.mutate({})} />
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <MapView
+        style={styles.conatiner}
+        provider="google"
+        showsUserLocation
+        followsUserLocation
+        showsMyLocationButton={true}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  conatiner: {},
+  conatiner: {
+    flex: 1,
+  },
 });
