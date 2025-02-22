@@ -7,7 +7,8 @@ import UIKit
 @main
 class AppDelegate: RCTAppDelegate {
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyAD6TAHcCBso0cKItEYYRf1NXHZIWf10A4")
+    let googleMapsApiKey = RNCConfig.env(for: "GOOGLE_MAPS_API_KEY") ?? ""
+    GMSServices.provideAPIKey(googleMapsApiKey)
 
     moduleName = "MatzipApp"
     dependencyProvider = RCTAppDependencyProvider()
