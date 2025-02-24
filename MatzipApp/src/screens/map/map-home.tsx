@@ -1,8 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useAuth } from '../../hooks/queries/useAuth';
-import MapView, { LatLng } from 'react-native-maps';
-import { colors } from '@/constants';
+import MapView, {
+  Callout,
+  LatLng,
+  LongPressEvent,
+  Marker,
+} from 'react-native-maps';
+import { alerts, colors, mapNavigations } from '@/constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   CompositeNavigationProp,
@@ -16,6 +28,8 @@ import { useUserLocation } from '@/hooks/useUserLocation';
 import { usePermission } from '@/hooks/usePermission';
 import IonIcons from '@react-native-vector-icons/ionicons';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
+import { mapStyle } from '@/style/mapStyle';
+import { CustomMarker } from '@/components/custom-marker';
 
 type Navigation = CompositeNavigationProp<
   StackNavigationProp<MapStackParamList>,
@@ -24,28 +38,41 @@ type Navigation = CompositeNavigationProp<
 
 export default function MapHomeScreen() {
   const inset = useSafeAreaInsets();
-  const { logoutMutation } = useAuth();
   const navigation = useNavigation<Navigation>();
   const { isLocationError, userLocation } = useUserLocation();
-
+  const [selectLocation, setSelectLocation] = useState<LatLng | null>(null);
   usePermission('LOCATION');
 
   const mapRef = useRef<MapView>(null);
-
-  const handleLogout = () => {
-    logoutMutation.mutate({});
-  };
 
   const handlePresUserLocation = () => {
     if (isLocationError) {
       return;
     }
     mapRef.current?.animateToRegion({
-      latitude: userLocation.latitude,
-      longitude: userLocation.longitude,
+      // latitude: userLocation.latitude,
+      // longitude: userLocation.longitude,
+      latitude: 37.5516032365118,
+      longitude: 126.98989626020192,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     });
+  };
+
+  const handlePressAddPost = () => {
+    if (!selectLocation) {
+      return Alert.alert(
+        alerts.NOT_SELECTED_LOCATION.TITLE,
+        alerts.NOT_SELECTED_LOCATION.DESCRIPTION,
+      );
+    }
+
+    navigation.navigate(mapNavigations.ADD_POST, { location: selectLocation });
+    setSelectLocation(null);
+  };
+
+  const handleLongPressMapView = (e: LongPressEvent) => {
+    setSelectLocation(e.nativeEvent.coordinate);
   };
 
   return (
@@ -57,13 +84,26 @@ export default function MapHomeScreen() {
         showsUserLocation
         followsUserLocation
         showsMyLocationButton={false}
-      />
+        googleMapId="dab31a8a797ce984"
+        onLongPress={handleLongPressMapView}>
+        <CustomMarker
+          coordinate={{
+            latitude: 37.5516032365118,
+            longitude: 126.98989626020192,
+          }}
+          color="BLUE"
+          score={3}
+        />
+      </MapView>
       <Pressable
         style={[styles.drawerButton, { top: inset.top || 20 }]}
         onPress={() => navigation.openDrawer()}>
         <IonIcons name="menu" color={colors.WHITE} size={25} />
       </Pressable>
       <View style={styles.buttonList}>
+        <Pressable style={styles.mapButton} onPress={handlePressAddPost}>
+          <MaterialIcons name="add" color={colors.WHITE} size={25} />
+        </Pressable>
         <Pressable style={styles.mapButton} onPress={handlePresUserLocation}>
           <MaterialIcons name="my-location" color={colors.WHITE} size={25} />
         </Pressable>
