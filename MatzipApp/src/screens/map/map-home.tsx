@@ -28,7 +28,6 @@ import { useUserLocation } from '@/hooks/useUserLocation';
 import { usePermission } from '@/hooks/usePermission';
 import IonIcons from '@react-native-vector-icons/ionicons';
 import MaterialIcons from '@react-native-vector-icons/material-icons';
-import { mapStyle } from '@/style/mapStyle';
 import { CustomMarker } from '@/components/custom-marker';
 
 type Navigation = CompositeNavigationProp<

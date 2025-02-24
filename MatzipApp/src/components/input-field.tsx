@@ -8,19 +8,20 @@ import {
   View,
 } from 'react-native';
 import { colors } from '../constants';
-import { forwardRef, useRef } from 'react';
+import { forwardRef, ReactNode, useRef } from 'react';
 import { mergeRefs } from '../utils';
 
 interface InputFieldProps extends TextInputProps {
   disabled?: boolean;
   error?: string;
   touched?: boolean;
+  icon?: ReactNode;
 }
 
 const devicedHeight = Dimensions.get('screen').height;
 
 export const InputField = forwardRef<TextInput, InputFieldProps>(
-  ({ error, disabled = false, touched = false, ...rest }, ref) => {
+  ({ error, disabled = false, touched = false, icon = null, ...rest }, ref) => {
     const innerRef = useRef<TextInput>(null);
 
     const handlePressInput = () => {
@@ -33,18 +34,22 @@ export const InputField = forwardRef<TextInput, InputFieldProps>(
           style={[
             styles.conatiner,
             disabled && styles.disabled,
+            rest.multiline && styles.multiline,
             touched && Boolean(error) && styles.inputError,
           ]}>
-          <TextInput
-            ref={ref ? mergeRefs(innerRef, ref) : innerRef}
-            editable={!disabled}
-            placeholderTextColor={colors.GRAY_500}
-            style={[styles.input, disabled && styles.disabled]}
-            autoCapitalize="none"
-            spellCheck={false}
-            autoCorrect={false}
-            {...rest}
-          />
+          <View style={Boolean(icon) && styles.innerContainer}>
+            {icon}
+            <TextInput
+              ref={ref ? mergeRefs(innerRef, ref) : innerRef}
+              editable={!disabled}
+              placeholderTextColor={colors.GRAY_500}
+              style={[styles.input, disabled && styles.disabled]}
+              autoCapitalize="none"
+              spellCheck={false}
+              autoCorrect={false}
+              {...rest}
+            />
+          </View>
           {touched && Boolean(error) && (
             <Text style={styles.error}>{error}</Text>
           )}
@@ -59,6 +64,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.GRAY_200,
     padding: devicedHeight > 700 ? 15 : 10,
+  },
+  innerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  multiline: {
+    paddingBottom: devicedHeight > 700 ? 45 : 30,
   },
   input: {
     fontSize: 16,
